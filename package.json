@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "@binance-chain/javascript-sdk": "2.16.4",
+    "bip39": "^3.0.2",
+    "bitcoinjs-lib": "5.1.7",
+    "cosmos-lib": "^1.1.0",
+    "dotenv": "^8.2.0",
+    "ethereumjs-tx": "^2.1.2",
+    "ethereumjs-util": "^6.2.0",
+    "ethereumjs-wallet": "^0.6.3",
+    "ethers": "^4.0.47",
+    "web3": "^1.2.7",
+    "wif": "^2.0.6"
+  }
+}

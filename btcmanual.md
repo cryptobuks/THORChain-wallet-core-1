@@ -1,0 +1,17 @@
+    const hashPriv = Bitcoin.crypto.sha256(Buffer.from(privateKey, 'hex')).toString('hex')
+    console.log('hashPriv', hashPriv)
+    //const privKey = "0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D"
+    const bytePrefix = net.bitcoin.bytes
+    const bytePriv = bytePrefix.concat(hashPriv)
+    console.log('bytePriv', bytePriv)
+    const hash1 = Bitcoin.crypto.sha256(Buffer.from(bytePriv, 'hex'))
+    console.log('hash1', hash1.toString('hex'))
+    const hash2 = Bitcoin.crypto.sha256(Buffer.from(hash1, 'hex'))
+    console.log('hash2', hash2.toString('hex'))
+    const checksum = hash2.toString('hex').substring(0,8)
+    console.log('checksum', checksum)
+    const final = bytePriv.concat(checksum)
+    console.log('final', final)
+    const bytes = Buffer.from(final, 'hex')
+    WIF = bs58.encode(bytes)
+    console.log('wif', WIF)
