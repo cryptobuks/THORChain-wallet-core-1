@@ -1,16 +1,20 @@
+######################################################################
+
 USER_PHRASE=
 VAULT_PHRASE=
 
+######################################################################
 #TESTNET
+
 ##ETHEREUM
 USER_ETH=
 VAULT_ETH=
 
 ##BITCOIN
-UTXO_SCRIPT=
-UTXO_TXID=
 USER_BTC=
 VAULT_BTC=
+UTXO_SCRIPT=
+UTXO_TXID=
 
 ##BINANCECHAIN
 USER_BNB=
@@ -20,13 +24,18 @@ VAULT_BNB=
 USER_THOR=
 VAULT_THOR=
 
+######################################################################
 #MAINNET
-USER_MAIN_BTC=
-VAULT_MAIN_BTC=
-
-USER_MAIN_BNB=
-VAULT_MAIN_BNB=
 
 ##ETHEREUM
 USER_MAIN_ETH=
 VAULT_MAIN_ETH=
+
+##BITCOIN
+USER_MAIN_BTC=
+VAULT_MAIN_BTC=
+
+##BINANCECHAIN
+USER_MAIN_BNB=
+VAULT_MAIN_BNB=
+

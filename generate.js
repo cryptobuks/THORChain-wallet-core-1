@@ -76,9 +76,10 @@ const setNet = async (net)  =>{
 
 // Get Buffer and Rootkey
 const getKey = () => {
+    const phrase = BIP39.generateMnemonic()
+    console.log("The phrase is:", phrase)
     buffer = BIP39.mnemonicToSeedSync(phrase)
     BIP32RootKey = buffer.toString('hex')
-    console.log("phrase:", phrase)
     console.log("BIP32RootKey:", BIP32RootKey)
 }
 
