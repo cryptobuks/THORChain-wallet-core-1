@@ -13,7 +13,6 @@ Uses the minimal javascript-libraries
     "ethereumjs-util": "^6.2.0",
     "ethereumjs-wallet": "^0.6.3",
     "ethers": "^4.0.47",
-    "web3": "^1.2.7",
     "wif": "^2.0.6"
   }
 }
