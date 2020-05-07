@@ -61,15 +61,15 @@ const validateAddress = (address) => {
 }
 
 // Generates a valid transaction hex to broadcast
-const vaultTx = async (addressTo, valueOut, memo) => {
-    const data = Buffer.from(memo, 'utf8');                                     // converts MEMO to buffer
+const vaultTx = async (_addressTo, _valueOut, _memo) => {
+    const data = Buffer.from(_memo, 'utf8');                                     // converts MEMO to buffer
     let OP_RETURN = Bitcoin.script.compile([Bitcoin.opcodes.OP_RETURN, data])   // Compile OP_RETURN script
     let witness = {script: Buffer.from(script, 'hex'), value: valueIn};         // Creates witness {script, valueIn}
 
     const psbt = new Bitcoin.Psbt({ network: netConfig.bitcoin.network })       // Network-specific
       .addInput({ hash: utxo, index:0, witnessUtxo:witness})                    // Add input {hash, index, witness}
       //.addOutput({ address: address, value: change})                        // Add output {address, value}
-      .addOutput({ address: addressTo, value: valueOut})                        // Add output {address, value}
+      .addOutput({ address: _addressTo, value: _valueOut})                        // Add output {address, value}
       .addOutput({script: OP_RETURN, value:0})                                  // Add OP_RETURN {script, value}
       .signInput(0, btcKeys);                                                   // Sign input0 with key-pair
 
@@ -82,13 +82,13 @@ const vaultTx = async (addressTo, valueOut, memo) => {
 }
 
 // Generates a valid transaction hex to broadcast
-const normalTx = async (addressTo, valueOut) => {
+const normalTx = async (_addressTo, _valueOut) => {
     let witness = {script: Buffer.from(script, 'hex'), value: valueIn};         // Creates witness {script, valueIn}
 
     const psbt = new Bitcoin.Psbt({ network: netConfig.bitcoin.network })       // Network-specific
       .addInput({ hash: utxo, index:0, witnessUtxo:witness})                    // Add input {hash, index, witness}
       //.addOutput({ address: address, value: change})                        // Add output {address, value}
-      .addOutput({ address: addressTo, value: valueOut})                        // Add output {address, value}
+      .addOutput({ address: _addressTo, value: _valueOut})                        // Add output {address, value}
       .signInput(0, btcKeys);                                                   // Sign input0 with key-pair
 
     //console.log('valid psbt', psbt.validateSignaturesOfInput(0));               // Should be true
@@ -107,15 +107,15 @@ const main = async () => {
     getAddress()
 
     console.log('\n', "Valdating address from USER_PHRASE")
-    validateAddress(process.env.VAULT_BTC)
+    validateAddress(addressTo)
 
     console.log('\n', "Getting signed vault transaction.")
-    console.log("AddressTo: %s, Value: %s, Memo: %s", process.env.VAULT_BTC, valueOut, MEMO)
-    vaultTx(process.env.VAULT_BTC, valueOut, MEMO)
+    console.log("AddressTo: %s, Value: %s, Memo: %s", addressTo, valueOut, MEMO)
+    vaultTx(addressTo, valueOut, MEMO)
 
     console.log('\n', "Getting signed normal transaction.")
-    console.log("AddressTo: %s, Value: %s", process.env.VAULT_BTC, valueOut)
-    normalTx(process.env.VAULT_BTC, valueOut)
+    console.log("AddressTo: %s, Value: %s", addressTo, valueOut)
+    normalTx(addressTo, valueOut)
 }
 
 main()
