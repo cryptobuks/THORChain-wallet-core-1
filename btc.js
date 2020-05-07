@@ -39,17 +39,30 @@ const setNet = async (_net)  =>{
 
 // Generates a network-specific key-pair by first converting the buffer to a Wallet-Import-Format (WIF)
 // The address is then decoded into type P2PWPK
-const getBtc = () => {
+const getAddress = () => {
     buffer = BIP39.mnemonicToSeedSync(phrase)
     const wif = WIF.encode(netConfig.bitcoin.network.wif, buffer, true);
     btcKeys = Bitcoin.ECPair.fromWIF(wif, netConfig.bitcoin.network);
     const { address } = Bitcoin.payments.p2wpkh({pubkey: btcKeys.publicKey, network: netConfig.bitcoin.network});
     console.log("btc:", address)
+    return address
+}
+
+const validateAddress = (address) => {
+    try {
+        Bitcoin.address.toOutputScript(address, netConfig.bitcoin.network)
+        console.log("%s is a valid address", address)
+        return true
+    }
+    catch(error) {
+        console.log("%s is not valid", address)
+        return false
+    }
 }
 
 // Generates a valid transaction hex to broadcast
-const signPsbt = async () => {
-    const data = Buffer.from(MEMO, 'utf8');                                     // converts MEMO to buffer
+const vaultTx = async (addressTo, valueOut, memo) => {
+    const data = Buffer.from(memo, 'utf8');                                     // converts MEMO to buffer
     let OP_RETURN = Bitcoin.script.compile([Bitcoin.opcodes.OP_RETURN, data])   // Compile OP_RETURN script
     let witness = {script: Buffer.from(script, 'hex'), value: valueIn};         // Creates witness {script, valueIn}
 
@@ -60,18 +73,49 @@ const signPsbt = async () => {
       .addOutput({script: OP_RETURN, value:0})                                  // Add OP_RETURN {script, value}
       .signInput(0, btcKeys);                                                   // Sign input0 with key-pair
 
-    console.log('valid psbt', psbt.validateSignaturesOfInput(0));               // Should be true
+    //console.log('valid psbt', psbt.validateSignaturesOfInput(0));               // Should be true
     psbt.finalizeAllInputs();                                                   // Finalise inputs
     const tx = psbt.extractTransaction();                                       // TX can be extracted in JSON
-    console.log(tx)
+    //console.log(tx)
     console.log(tx.toHex())                                                     // TX can be converted to HEX
+    return tx.toHex()
+}
+
+// Generates a valid transaction hex to broadcast
+const normalTx = async (addressTo, valueOut) => {
+    let witness = {script: Buffer.from(script, 'hex'), value: valueIn};         // Creates witness {script, valueIn}
+
+    const psbt = new Bitcoin.Psbt({ network: netConfig.bitcoin.network })       // Network-specific
+      .addInput({ hash: utxo, index:0, witnessUtxo:witness})                    // Add input {hash, index, witness}
+      //.addOutput({ address: address, value: change})                        // Add output {address, value}
+      .addOutput({ address: addressTo, value: valueOut})                        // Add output {address, value}
+      .signInput(0, btcKeys);                                                   // Sign input0 with key-pair
+
+    //console.log('valid psbt', psbt.validateSignaturesOfInput(0));               // Should be true
+    psbt.finalizeAllInputs();                                                   // Finalise inputs
+    const tx = psbt.extractTransaction();                                       // TX can be extracted in JSON
+    //console.log(tx)
+    console.log(tx.toHex())                                                     // TX can be converted to HEX
+    return tx.toHex()
 }
 
 const main = async () => {
-    generateKey()
+    console.log("Setting Net")
     await setNet('TESTNET')             // TESTNET or MAINNET
-    getBtc()
-    signPsbt()
+
+    console.log('\n', "Getting address from USER_PHRASE")
+    getAddress()
+
+    console.log('\n', "Valdating address from USER_PHRASE")
+    validateAddress(process.env.VAULT_BTC)
+
+    console.log('\n', "Getting signed vault transaction.")
+    console.log("AddressTo: %s, Value: %s, Memo: %s", process.env.VAULT_BTC, valueOut, MEMO)
+    vaultTx(process.env.VAULT_BTC, valueOut, MEMO)
+
+    console.log('\n', "Getting signed normal transaction.")
+    console.log("AddressTo: %s, Value: %s", process.env.VAULT_BTC, valueOut)
+    normalTx(process.env.VAULT_BTC, valueOut)
 }
 
 main()
