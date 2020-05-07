@@ -55,6 +55,7 @@ const signPsbt = async () => {
 
     const psbt = new Bitcoin.Psbt({ network: netConfig.bitcoin.network })       // Network-specific
       .addInput({ hash: utxo, index:0, witnessUtxo:witness})                    // Add input {hash, index, witness}
+      //.addOutput({ address: address, value: change})                        // Add output {address, value}
       .addOutput({ address: addressTo, value: valueOut})                        // Add output {address, value}
       .addOutput({script: OP_RETURN, value:0})                                  // Add OP_RETURN {script, value}
       .signInput(0, btcKeys);                                                   // Sign input0 with key-pair

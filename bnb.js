@@ -54,8 +54,10 @@ const signBnb = async() => {
 
 const main = async () => {
     setNet('MAINNET')             // TESTNET or MAINNET
-    getBnb()
-    signBnb()
+    getAddress()
+    validateAddress()
+    vaultTx("MEMO")
+    normalTx("address", "value", "MEMO")
 }
 
 main()

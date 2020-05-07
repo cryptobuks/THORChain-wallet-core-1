@@ -7,8 +7,6 @@ const WIF = require('wif')
 const BNBClient = require('@binance-chain/javascript-sdk')
 const Cosmos = require('cosmos-lib');
 
-const phrase = process.env.USER_PHRASE; 
-
 // Variables
 var BIP32RootKey; var buffer; 
 var walletKeys = {"eth":"", "btc":"", "bnb":"", "thor":""}
@@ -79,6 +77,7 @@ const getKey = () => {
     const phrase = BIP39.generateMnemonic()
     console.log("The phrase is:", phrase)
     buffer = BIP39.mnemonicToSeedSync(phrase)
+    console.log('valid BIP39 mnemonic?', BIP39.validateMnemonic(phrase))
     BIP32RootKey = buffer.toString('hex')
     console.log("BIP32RootKey:", BIP32RootKey)
 }
@@ -104,7 +103,6 @@ const getBtc = () => {
     const keyPair = Bitcoin.ECPair.fromWIF(wif, netConfig.bitcoin.network);
     const { address } = Bitcoin.payments.p2wpkh({pubkey: keyPair.publicKey, network: netConfig.bitcoin.network});
     console.log("btc:", address)
-    console.log('valid BIP39 mnemonic?', BIP39.validateMnemonic(phrase))
     console.log('btc privkey:', keyPair.privateKey.toString('hex'), '\n')
     walletKeys = {
         "eth":walletKeys.eth, 
